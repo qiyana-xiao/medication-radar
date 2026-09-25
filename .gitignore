@@ -1,0 +1,24 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+
+# local-only launcher with real credentials (key/password live here, never commit)
+start-medication-radar.bat
+
+# runtime logs and local maintenance scripts (may contain credentials)
+logs/
+
+# legacy archives incl. old SQLite user data (kept on disk only, never in git)
+backups/
+
+# legacy Node.js backend (superseded by backend-java, kept on disk only)
+backend/
+
+# portable runtimes auto-downloaded by scripts\setup-runtime.ps1 (never commit)
+runtime/
+
+# Maven build output, except the prebuilt jar shipped for no-Maven users
+backend-java/target/*
+!backend-java/target/medication-radar-backend-2.0.0-SNAPSHOT.jar

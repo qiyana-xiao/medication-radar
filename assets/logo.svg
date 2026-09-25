@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- 圆角方形底板 -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#dce9fb"/>
+    </linearGradient>
+    <linearGradient id="cross" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2b8fff"/>
+      <stop offset="1" stop-color="#0f5fce"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="248" height="248" rx="58" fill="url(#bg)" stroke="#bad2f5" stroke-width="2"/>
+
+  <!-- 雷达同心圆环（图片1主体） -->
+  <circle cx="128" cy="128" r="100" fill="none" stroke="#1570ef" stroke-width="7" opacity="0.92"/>
+  <circle cx="128" cy="128" r="76" fill="none" stroke="#1570ef" stroke-width="4.5" opacity="0.55"/>
+  <circle cx="128" cy="128" r="54" fill="none" stroke="#1570ef" stroke-width="2.5" opacity="0.28"/>
+
+  <!-- 雷达扫描线（附加元素：扫描动感） -->
+  <line x1="128" y1="128" x2="203" y2="63" stroke="#1570ef" stroke-width="4" stroke-linecap="round" opacity="0.8" stroke-dasharray="14 8"/>
+
+  <!-- 中心医疗十字（图片1主体，圆角） -->
+  <path d="M113 81h30a8 8 0 0 1 8 8v24h24a8 8 0 0 1 8 8v30a8 8 0 0 1-8 8h-24v24a8 8 0 0 1-8 8h-30a8 8 0 0 1-8-8v-24H81a8 8 0 0 1-8-8v-30a8 8 0 0 1 8-8h24V89a8 8 0 0 1 8-8z" fill="url(#cross)"/>
+
+  <!-- 红色信号点（图片1主体：右上角红点+白色高光） -->
+  <circle cx="203" cy="58" r="15" fill="#ef4444"/>
+  <circle cx="198" cy="52" r="5" fill="#ffffff" opacity="0.9"/>
+
+  <!-- 药丸元素（附加元素：左下角，斜置胶囊） -->
+  <g transform="rotate(-38 62 190)">
+    <rect x="40" y="181" width="44" height="18" rx="9" fill="#4d9aff" stroke="#2b8fff" stroke-width="2"/>
+    <line x1="62" y1="181" x2="62" y2="199" stroke="#2b8fff" stroke-width="2"/>
+  </g>
+
+  <!-- 小信号点（附加元素） -->
+  <circle cx="176" cy="172" r="6" fill="#ffd54f"/>
+</svg>

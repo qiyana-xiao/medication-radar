@@ -1,0 +1,4 @@
+target/*
+!target/medication-radar-backend-2.0.0-SNAPSHOT.jar
+.env
+*.log

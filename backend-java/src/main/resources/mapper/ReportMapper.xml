@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medicationradar.mapper.ReportMapper">
+  <sql id="ownedConditions">
+    user_id = #{userId}
+    <if test="filter == 'high'">
+      AND risk_level IN ('高', '极高')
+    </if>
+    <if test="filter == 'favorite'">
+      AND favorite = 1
+    </if>
+    <if test="query != null and query != ''">
+      AND JSON_SEARCH(medications, 'one', CONCAT('%', #{query}, '%'), NULL, '$[*].name') IS NOT NULL
+    </if>
+  </sql>
+
+  <select id="countOwned" resultType="long">
+    SELECT COUNT(*) FROM reports WHERE <include refid="ownedConditions"/>
+  </select>
+
+  <select id="selectOwnedPage" resultType="com.medicationradar.entity.Report">
+    SELECT id, user_id, patient, medications, risk_level, score, favorite, created_at
+    FROM reports
+    WHERE <include refid="ownedConditions"/>
+    ORDER BY created_at DESC, id DESC
+    LIMIT #{limit} OFFSET #{offset}
+  </select>
+
+  <select id="selectTotals" resultType="map">
+    SELECT COUNT(*) AS total,
+           COALESCE(SUM(CASE WHEN risk_level IN ('高', '极高') THEN 1 ELSE 0 END), 0) AS highRisk,
+           COALESCE(SUM(CASE WHEN risk_level = '极高' THEN 1 ELSE 0 END), 0) AS critical,
+           COALESCE(ROUND(AVG(score), 1), 0) AS avgScore,
+           COALESCE(SUM(CASE WHEN created_at >= NOW() - INTERVAL 7 DAY THEN 1 ELSE 0 END), 0) AS thisWeek
+    FROM reports WHERE user_id = #{userId}
+  </select>
+
+  <select id="selectRiskDistribution" resultType="map">
+    SELECT risk_level AS level, COUNT(*) AS count
+    FROM reports WHERE user_id = #{userId}
+    GROUP BY risk_level
+  </select>
+
+  <select id="selectTopDrugs" resultType="map">
+    SELECT jt.name AS name, COUNT(*) AS count
+    FROM reports r
+    JOIN JSON_TABLE(r.medications, '$[*]' COLUMNS (name VARCHAR(100) PATH '$.name')) jt
+    WHERE r.user_id = #{userId} AND jt.name IS NOT NULL
+    GROUP BY jt.name ORDER BY count DESC LIMIT 10
+  </select>
+
+  <select id="selectTrend" resultType="map">
+    SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS day, COUNT(*) AS count
+    FROM reports
+    WHERE user_id = #{userId} AND created_at >= NOW() - INTERVAL 30 DAY
+    GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+    ORDER BY day
+  </select>
+
+  <select id="selectGlobalTotals" resultType="map">
+    SELECT COUNT(*) AS total,
+           COALESCE(SUM(CASE WHEN risk_level IN ('高', '极高') THEN 1 ELSE 0 END), 0) AS highRisk,
+           COALESCE(SUM(CASE WHEN risk_level = '极高' THEN 1 ELSE 0 END), 0) AS critical,
+           COALESCE(ROUND(AVG(score), 1), 0) AS avgScore,
+           COALESCE(SUM(CASE WHEN created_at >= NOW() - INTERVAL 7 DAY THEN 1 ELSE 0 END), 0) AS thisWeek
+    FROM reports
+  </select>
+
+  <select id="selectGlobalRiskDistribution" resultType="map">
+    SELECT risk_level AS level, COUNT(*) AS count
+    FROM reports
+    GROUP BY risk_level
+  </select>
+
+  <select id="selectGlobalTopDrugs" resultType="map">
+    SELECT jt.name AS name, COUNT(*) AS count
+    FROM reports r
+    JOIN JSON_TABLE(r.medications, '$[*]' COLUMNS (name VARCHAR(100) PATH '$.name')) jt
+    WHERE jt.name IS NOT NULL
+    GROUP BY jt.name ORDER BY count DESC LIMIT 10
+  </select>
+
+  <select id="selectGlobalTrend" resultType="map">
+    SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS day, COUNT(*) AS count
+    FROM reports
+    WHERE created_at >= NOW() - INTERVAL 30 DAY
+    GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+    ORDER BY day
+  </select>
+</mapper>
